@@ -1,17 +1,14 @@
 #pragma once
-
 //#define TMC2130DEBUG
-#include <Arduino.h>
 #include <stdint.h>
-#include <SPI.h>
+#include <SPIDevice.h>
 
 #define TMC2130STEPPER_VERSION 0x020501 // v2.5.1
 
 class TMC2130Stepper {
 	public:
-		TMC2130Stepper(uint16_t pinCS);
-		TMC2130Stepper(uint16_t pinEN, uint16_t pinDIR, uint16_t pinStep, uint16_t pinCS);
-		TMC2130Stepper(uint16_t pinEN, uint16_t pinDIR, uint16_t pinStep, uint16_t pinCS, uint16_t pinMOSI, uint16_t pinMISO, uint16_t pinSCK);
+		TMC2130Stepper(uint32_t pinCS);
+		TMC2130Stepper(uint32_t pinEN, uint32_t pinDIR, uint32_t pinStep, uint32_t pinCS);
 		void begin();
 		void checkStatus();
 		void rms_current(uint16_t mA, float multiplier=0.5, float RS=0.11);
@@ -401,15 +398,12 @@ class TMC2130Stepper {
 		bool flag_otpw = false;
 
 	private:
-		//const uint8_t WRITE     = 0b10000000;
-		//const uint8_t READ      = 0b00000000;
-		const uint16_t _pinEN        = 0xFFFF;
-		const uint16_t _pinSTEP      = 0xFFFF;
-		const uint16_t _pinCS        = 0xFFFF;
-		//const int MOSI_PIN    = 12;
-		//const int MISO_PIN    = 11;
-		//const int SCK_PIN     = 13;
-		const uint16_t _pinDIR       = 0xFFFF;
+		const uint32_t _pinEN        = 0xFFFFFFFF;
+		const uint32_t _pinSTEP      = 0xFFFFFFFF;
+		const uint32_t _pinCS        = 0xFFFFFFFF;
+		const uint32_t _pinDIR       = 0xFFFFFFFF;
+		SPIDevice _spi(1,0); //TODO: make possible to vary spidevice
+
 
 		// Shadow registers
 		uint32_t 	GCONF_sr 			= 0x00000000UL,
@@ -442,5 +436,4 @@ class TMC2130Stepper {
 		void send2130(uint8_t addressByte, uint32_t *config);
 
 		uint16_t val_mA           = 0;
-		const bool uses_sw_spi;
 };

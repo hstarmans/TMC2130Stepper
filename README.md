@@ -1,5 +1,5 @@
 # TMC2130Stepper
-Arduino library for Trinamic TMC2130 Stepper driver
+Beaglebone library for Trinamic TMC2130 Stepper driver
 
 ## TODO:
 - [ ] Comments
@@ -11,16 +11,9 @@ Arduino library for Trinamic TMC2130 Stepper driver
 
 ## Installation:
 
-Use the Arduino IDE library manager (Sketch -> Include library -> Manage libraries...)
-
-Search for TMC2130Stepper and then install.
-
-Or download the zip file from Github and extract it to<br>
-your-scetchbook-location/libraries<br>
-and restart the IDE.
-
-or goto to you arduino libraries folder and in command line
-    git clone https://github.com/teemuatlut/TMC2130Stepper.git
+Login to beaglebone with for example SSH.
+Git clone this repository to the command line
+    git clone https://github.com/hstarmans/TMC2130Stepper.git
 
 ## What works:
 Nearly all the features in the registeries are configurable through get/set functions. See below for a list of functions. Datasheet ([link](https://www.trinamic.com/fileadmin/assets/Products/ICs_Documents/TMC2130_datasheet.pdf)) from Trinamic also provides further detail into the settings available.

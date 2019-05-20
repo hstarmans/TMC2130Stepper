@@ -1,57 +1,45 @@
+// fork off https://github.com/teemuatlut/TMC2130Stepper
+
 #include "TMC2130Stepper.h"
 #include "TMC2130Stepper_MACROS.h"
-#include <SPI.h>
-#include "SW_SPI.h"
+#include "generic-gpio.h" 
+#include <SPIDevice.h>
 
-TMC2130Stepper::TMC2130Stepper(uint16_t pinCS) : _pinCS(pinCS), uses_sw_spi(false) {}
+TMC2130Stepper::TMC2130Stepper(uint32_t pinCS) : _pinCS(pinCS), uses_sw_spi(false) {}
 
-TMC2130Stepper::TMC2130Stepper(uint16_t pinEN, uint16_t pinDIR, uint16_t pinStep, uint16_t pinCS) :
+TMC2130Stepper::TMC2130Stepper(uint32_t pinEN, uint32_t pinDIR, uint32_t pinStep, uint32_t pinCS) :
 	_pinEN(pinEN),
 	_pinSTEP(pinStep),
 	_pinCS(pinCS),
-	_pinDIR(pinDIR),
-	uses_sw_spi(false)
+	_pinDIR(pinDIR)
 	{}
-
-TMC2130Stepper::TMC2130Stepper(uint16_t pinEN, uint16_t pinDIR, uint16_t pinStep, uint16_t pinCS, uint16_t pinMOSI, uint16_t pinMISO, uint16_t pinSCK) :
-	_pinEN(pinEN),
-	_pinSTEP(pinStep),
-	_pinCS(pinCS),
-	_pinDIR(pinDIR),
-	uses_sw_spi(true)
-	{ TMC_SW_SPI.setPins(pinMOSI, pinMISO, pinSCK); }
 
 void TMC2130Stepper::begin() {
 #ifdef TMC2130DEBUG
-	Serial.println("TMC2130 Stepper driver library");
-	Serial.print("Enable pin: ");
-	Serial.println(_pinEN);
-	Serial.print("Direction pin: ");
-	Serial.println(_pinDIR);
-	Serial.print("Step pin: ");
-	Serial.println(_pinSTEP);
-	Serial.print("Chip select pin: ");
-	Serial.println(_pinCS);
+	printf("TMC2130 Stepper driver library\n");
+	printf("Enable pin: \n");
+	printf("%lu\n", (unsigned long)_pinEN);
+	printf("Direction pin: ");
+	printf("%lu\n", (unsigned long)_pinDIR);
+	printf("Step pin: ");
+	printf("%lu\n", (unsigned long)_pinSTEP);
+	printf("Chip select pin: \n");
+	printf("%lu\n", (unsigned long)_pinCS);
 #endif
 	delay(200);
 
 	//set pins
-	if (_pinEN != 0xFFFF) {
-		pinMode(_pinEN, OUTPUT);
-		digitalWrite(_pinEN, HIGH); //deactivate driver (LOW active)
+	if (_pinEN != 0xFFFFFFFF) {
+		set_gpio(_pinEN); //deactivate driver (LOW active)
 	}
-	if (_pinDIR != 0xFFFF) {
-		pinMode(_pinDIR, OUTPUT);
+	if (_pinSTEP != 0xFFFFFFFF) {
+		clr_gpio(_pinSTEP);
 	}
-	if (_pinSTEP != 0xFFFF) {
-		pinMode(_pinSTEP, OUTPUT);
-		digitalWrite(_pinSTEP, LOW);
-	}
+	set_gpio(_pinCS);
 
-	pinMode(_pinCS, OUTPUT);
-	digitalWrite(_pinCS, HIGH);
-
-	if (uses_sw_spi) TMC_SW_SPI.init();
+	// set SPI settings
+	_spi.setSpeed(16000000/8); 
+	_spi.setMode(SPIDevice::SPI_MODE3);
 
 	// Reset registers
 	push();
@@ -61,68 +49,44 @@ void TMC2130Stepper::begin() {
 }
 
 void TMC2130Stepper::send2130(uint8_t addressByte, uint32_t *config) {
-	if (uses_sw_spi) {
-		digitalWrite(_pinCS, LOW);
+	_spi.open(); //TODO: handle if device can't open
+	// here you set the chip select per driver
+	clr_gpio(_pinCS);
 
-		status_response = TMC_SW_SPI.transfer(addressByte & 0xFF); // s =
+	status_response = _spi.write(addressByte & 0xFF); // s =
 
-		if (addressByte >> 7) { // Check if WRITE command
-			//*config &= ~mask; // Clear bits being set
-			//*config |= (value & mask); // Set new values
-			TMC_SW_SPI.transfer((*config >> 24) & 0xFF);
-			TMC_SW_SPI.transfer((*config >> 16) & 0xFF);
-			TMC_SW_SPI.transfer((*config >>  8) & 0xFF);
-			TMC_SW_SPI.transfer(*config & 0xFF);
-		} else { // READ command
-			TMC_SW_SPI.transfer16(0x0000); // Clear SPI
-			TMC_SW_SPI.transfer16(0x0000);
-			digitalWrite(_pinCS, HIGH);
-			digitalWrite(_pinCS, LOW);
+	if (addressByte >> 7) { // Check if WRITE command
+		//*config &= ~mask; // Clear bits being set
+		//*config |= (value & mask); // Set new values
+		_spi.write((*config >> 24) & 0xFF);
+		_spi.write((*config >> 16) & 0xFF);
+		_spi.write((*config >>  8) & 0xFF);
+		_spi.write(*config & 0xFF);
+	} else { // READ command
+		_spi.write({0x00, 0x00, 0x00, 0x00}, 4);
+		set_gpio(_pinCS);
+		clr_gpio(_pinCS);
 
-			TMC_SW_SPI.transfer(addressByte & 0xFF); // Send the address byte again
-			*config = TMC_SW_SPI.transfer(0x00);
-			*config <<= 8;
-			*config|= TMC_SW_SPI.transfer(0x00);
-			*config <<= 8;
-			*config|= TMC_SW_SPI.transfer(0x00);
-			*config <<= 8;
-			*config|= TMC_SW_SPI.transfer(0x00);
-		}
+		_spi.write(addressByte & 0xFF); // Send the address byte again
+		// write 
+		unsigned char recv [1] = {0}; 
 
-		digitalWrite(_pinCS, HIGH);
-	} else {
-		SPI.begin();
-		SPI.beginTransaction(SPISettings(16000000/8, MSBFIRST, SPI_MODE3));
-		digitalWrite(_pinCS, LOW);
-
-		status_response = SPI.transfer(addressByte & 0xFF); // s =
-
-		if (addressByte >> 7) { // Check if WRITE command
-			//*config &= ~mask; // Clear bits being set
-			//*config |= (value & mask); // Set new values
-			SPI.transfer((*config >> 24) & 0xFF);
-			SPI.transfer((*config >> 16) & 0xFF);
-			SPI.transfer((*config >>  8) & 0xFF);
-			SPI.transfer(*config & 0xFF);
-		} else { // READ command
-			SPI.transfer16(0x0000); // Clear SPI
-			SPI.transfer16(0x0000);
-			digitalWrite(_pinCS, HIGH);
-			digitalWrite(_pinCS, LOW);
-
-			SPI.transfer(addressByte & 0xFF); // Send the address byte again
-			*config = SPI.transfer(0x00);
-			*config <<= 8;
-			*config|= SPI.transfer(0x00);
-			*config <<= 8;
-			*config|= SPI.transfer(0x00);
-			*config <<= 8;
-			*config|= SPI.transfer(0x00);
-		}
-
-		digitalWrite(_pinCS, HIGH);
-		SPI.endTransaction();
+		//TODO: this can be made shorter
+		_spi.transfer({0x00}, recv, 1);
+		*config = recv[0];
+		_spi.transfer({0x00}, recv, 1);
+		*config <<= 8;
+		*config|= recv[0];
+		_spi.transfer({0x00}, recv, 1);
+		*config <<= 8;
+		*config|= recv[0];
+		_spi.transfer({0x00}, recv, 1);
+		*config <<= 8;
+		*config|= recv[0];
 	}
+
+	set_gpio(_pinCS);
+	_spi.close();
 }
 
 bool TMC2130Stepper::checkOT() {

@@ -23,10 +23,14 @@
 #include <sys/mman.h>
 #include <unistd.h>
 
-#include "common/logging.h"
-
-#include "motor-interface-constants.h"
 #include "generic-gpio.h"
+
+// GPIO Registers
+#define GPIO_OE           0x134
+#define GPIO_DATAIN       0x138
+#define GPIO_DATAOUT      0x13c
+#define GPIO_CLEARDATAOUT 0x190
+#define GPIO_SETDATAOUT   0x194
 
 // Memory space mapped to the Clock Module registers
 #define CM_BASE                 0x44e00000
@@ -95,64 +99,25 @@ static void set_gpio_mask(uint32_t *mask, uint32_t gpio_def) {
   }
 }
 
+// TODO: have at central place, right now it is tow places
+#define SLED_MOTOR_STEP (GPIO_1_BASE | 16)
+#define SLED_MOTOR_DIR (GPIO_1_BASE | 18)
+#define SLED_MOTOR_ENABLE (GPIO_1_BASE | 19)
+
+#define SLED_ENDSWITCH_FRONT (GPIO_0_BASE | 31)
+#define SLED_ENDSWITCH_BACK (GPIO_1_BASE | 28)
+
 static void cfg_gpio_io() {
   uint32_t output_mask[4] = { 0, 0, 0, 0 };
 
-  // Motor Step signals
-  set_gpio_mask(output_mask, MOTOR_1_STEP_GPIO);
-  set_gpio_mask(output_mask, MOTOR_2_STEP_GPIO);
-  set_gpio_mask(output_mask, MOTOR_3_STEP_GPIO);
-  set_gpio_mask(output_mask, MOTOR_4_STEP_GPIO);
-  set_gpio_mask(output_mask, MOTOR_5_STEP_GPIO);
-  set_gpio_mask(output_mask, MOTOR_6_STEP_GPIO);
-  set_gpio_mask(output_mask, MOTOR_7_STEP_GPIO);
-  set_gpio_mask(output_mask, MOTOR_8_STEP_GPIO);
-
-  // Motor Direction signals
-  set_gpio_mask(output_mask, MOTOR_1_DIR_GPIO);
-  set_gpio_mask(output_mask, MOTOR_2_DIR_GPIO);
-  set_gpio_mask(output_mask, MOTOR_3_DIR_GPIO);
-  set_gpio_mask(output_mask, MOTOR_4_DIR_GPIO);
-  set_gpio_mask(output_mask, MOTOR_5_DIR_GPIO);
-  set_gpio_mask(output_mask, MOTOR_6_DIR_GPIO);
-  set_gpio_mask(output_mask, MOTOR_7_DIR_GPIO);
-  set_gpio_mask(output_mask, MOTOR_8_DIR_GPIO);
-
-  // Motor Enable signal and other outputs
-  set_gpio_mask(output_mask, MOTOR_ENABLE_GPIO);
-
-  // Aux and PWM signals
-  set_gpio_mask(output_mask, AUX_1_GPIO);
-  set_gpio_mask(output_mask, AUX_2_GPIO);
-  set_gpio_mask(output_mask, AUX_3_GPIO);
-  set_gpio_mask(output_mask, AUX_4_GPIO);
-  set_gpio_mask(output_mask, AUX_5_GPIO);
-  set_gpio_mask(output_mask, AUX_6_GPIO);
-  set_gpio_mask(output_mask, AUX_7_GPIO);
-  set_gpio_mask(output_mask, AUX_8_GPIO);
-  set_gpio_mask(output_mask, AUX_9_GPIO);
-  set_gpio_mask(output_mask, AUX_10_GPIO);
-  set_gpio_mask(output_mask, AUX_11_GPIO);
-  set_gpio_mask(output_mask, AUX_12_GPIO);
-  set_gpio_mask(output_mask, AUX_13_GPIO);
-  set_gpio_mask(output_mask, AUX_14_GPIO);
-  set_gpio_mask(output_mask, AUX_15_GPIO);
-  set_gpio_mask(output_mask, AUX_16_GPIO);
-  set_gpio_mask(output_mask, PWM_1_GPIO);
-  set_gpio_mask(output_mask, PWM_2_GPIO);
-  set_gpio_mask(output_mask, PWM_3_GPIO);
-  set_gpio_mask(output_mask, PWM_4_GPIO);
+  // All the gpio's we need from userspace (PRU will do its own)
+  set_gpio_mask(output_mask, SLED_MOTOR_ENABLE);
+  set_gpio_mask(output_mask, SLED_MOTOR_DIR);
+  set_gpio_mask(output_mask, SLED_MOTOR_STEP);
 
   uint32_t input_mask[4] = { 0, 0, 0, 0 };
-  set_gpio_mask(input_mask, IN_1_GPIO);
-  set_gpio_mask(input_mask, IN_2_GPIO);
-  set_gpio_mask(input_mask, IN_3_GPIO);
-  set_gpio_mask(input_mask, IN_4_GPIO);
-  set_gpio_mask(input_mask, IN_5_GPIO);
-  set_gpio_mask(input_mask, IN_6_GPIO);
-  set_gpio_mask(input_mask, IN_7_GPIO);
-  set_gpio_mask(input_mask, IN_8_GPIO);
-  set_gpio_mask(input_mask, IN_9_GPIO);
+  set_gpio_mask(input_mask, SLED_ENDSWITCH_FRONT);
+  set_gpio_mask(input_mask, SLED_ENDSWITCH_BACK);
 
   // Preserve GPIO output settings that might already be set by other tasks,
   // so we only selectively set the bits we are interested in.
@@ -175,12 +140,11 @@ static volatile uint32_t *map_port(int fd, size_t length, off_t offset) {
   return (volatile uint32_t*) mmap(0, length, PROT_READ | PROT_WRITE, MAP_SHARED, fd, offset);
 }
 
-static void ena_gpio_clk(volatile uint32_t *cm, uint32_t reg, int bank) {
+static void ena_gpio_clk(volatile uint32_t *cm, uint32_t reg, int) {
   uint32_t val;
 
   val = cm[reg/4];
   if (val & IDLEST_MASK) {
-    Log_debug("Enabling GPIO-%d clock", bank);
     val |= MODULEMODE_ENABLE;
     cm[reg/4] = val;
     do {
@@ -222,8 +186,7 @@ bool map_gpio() {
   gpio_3 = map_port(fd, GPIO_MMAP_SIZE, GPIO_3_BASE);
   if (gpio_3 == MAP_FAILED) { perror("mmap() GPIO-3"); goto exit; }
 
-  // Set all the pins we need to the respective input/output mode.
-  cfg_gpio_io();
+  cfg_gpio_io();  // All the pins we use.
 
   ret = true;
 

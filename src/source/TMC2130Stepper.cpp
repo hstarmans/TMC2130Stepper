@@ -5,13 +5,14 @@
 #include "generic-gpio.h" 
 #include <SPIDevice.h>
 
-TMC2130Stepper::TMC2130Stepper(uint32_t pinCS) : _pinCS(pinCS), uses_sw_spi(false) {}
+TMC2130Stepper::TMC2130Stepper(uint32_t pinCS) : _pinCS(pinCS), _spi(exploringBB::SPIDevice(1,0)) {}
 
 TMC2130Stepper::TMC2130Stepper(uint32_t pinEN, uint32_t pinDIR, uint32_t pinStep, uint32_t pinCS) :
 	_pinEN(pinEN),
 	_pinSTEP(pinStep),
 	_pinCS(pinCS),
-	_pinDIR(pinDIR)
+	_pinDIR(pinDIR),
+	_spi(exploringBB::SPIDevice(1,0))
 	{}
 
 void TMC2130Stepper::begin() {
@@ -26,7 +27,6 @@ void TMC2130Stepper::begin() {
 	printf("Chip select pin: \n");
 	printf("%lu\n", (unsigned long)_pinCS);
 #endif
-	delay(200);
 
 	//set pins
 	if (_pinEN != 0xFFFFFFFF) {
@@ -39,7 +39,7 @@ void TMC2130Stepper::begin() {
 
 	// set SPI settings
 	_spi.setSpeed(16000000/8); 
-	_spi.setMode(SPIDevice::SPI_MODE3);
+	_spi.setMode(exploringBB::SPIDevice::MODE3);
 
 	// Reset registers
 	push();
@@ -63,7 +63,8 @@ void TMC2130Stepper::send2130(uint8_t addressByte, uint32_t *config) {
 		_spi.write((*config >>  8) & 0xFF);
 		_spi.write(*config & 0xFF);
 	} else { // READ command
-		_spi.write({0x00, 0x00, 0x00, 0x00}, 4);
+		unsigned char null_data[4] = {0x00, 0x00, 0x00, 0x00};
+		_spi.write(null_data, 4);
 		set_gpio(_pinCS);
 		clr_gpio(_pinCS);
 
@@ -102,7 +103,7 @@ bool TMC2130Stepper::getOTPW() { return flag_otpw; }
 
 void TMC2130Stepper::clear_otpw() {	flag_otpw = 0; }
 
-bool TMC2130Stepper::isEnabled() { return !digitalRead(_pinEN) && toff(); }
+bool TMC2130Stepper::isEnabled() { return !_pinEN && toff(); }
 
 void TMC2130Stepper::push() {
 	GCONF(GCONF_sr);

@@ -402,7 +402,7 @@ class TMC2130Stepper {
 		const uint32_t _pinSTEP      = 0xFFFFFFFF;
 		const uint32_t _pinCS        = 0xFFFFFFFF;
 		const uint32_t _pinDIR       = 0xFFFFFFFF;
-		SPIDevice _spi(1,0); //TODO: make possible to vary spidevice
+		exploringBB::SPIDevice _spi; //TODO: make possible to vary spidevice
 
 
 		// Shadow registers

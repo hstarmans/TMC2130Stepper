@@ -19,7 +19,7 @@ cmake -H. -Bbuild & make -C ./build
 ### Cross compiler
 
 Cross compiler can be downloaded from [link](https://www.digikey.com/eewiki/display/linuxonarm/BeagleBone+Black#BeagleBoneBlack-Debian9).
-The cross-compiler should match theexit target system check; 
+Ensure the cross-compiler matches the target system; 
 ```console
 gcc -version
 ```

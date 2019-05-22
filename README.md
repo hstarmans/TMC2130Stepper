@@ -1,8 +1,6 @@
 # TMC2130Stepper
 Beaglebone library for Trinamic TMC2130 Stepper driver.
 
-
-
 ## TODO:
 - [ ] Comments
 - [x] Documentation
@@ -14,9 +12,9 @@ Beaglebone library for Trinamic TMC2130 Stepper driver.
 ## Compile notes
 
 ### Beaglebone
-````console
+```console
 cmake . & make
-````
+```
 
 ### Cross compiler
 
@@ -36,7 +34,9 @@ Remove makecache if a cmake fails.
 
 Login to beaglebone with for example SSH.
 Git clone this repository to the command line
-    git clone https://github.com/hstarmans/TMC2130Stepper.git
+```console
+git clone https://github.com/hstarmans/TMC2130Stepper.git
+```
 
 ## What works:
 Nearly all the features in the registeries are configurable through get/set functions. See below for a list of functions. Datasheet ([link](https://www.trinamic.com/fileadmin/assets/Products/ICs_Documents/TMC2130_datasheet.pdf)) from Trinamic also provides further detail into the settings available.

@@ -22,22 +22,22 @@ TMC2130Stepper driver = TMC2130Stepper(EN_PIN, DIR_PIN, STEP_PIN, CS_PIN);
 using namespace std;
 
 int main() {
-    // check status
 	driver.begin();
 	uint8_t result = driver.test_connection();
 	if (result) {
         std::cout << "failed!" << std::endl; 
 		std::cout << "Likely cause: " << std::endl;
+		// if power is inserted, still returns "no power", test seems incorrect
         switch(result) {
             case 1: std::cout << "loose connection" << std::endl; break;
-            case 2: std::cout << "Likely cause: no power" << std::endl; break;
+            case 2: std::cout << "Likely cause: no power " << std::endl; break;
         }
         std::cout << "Fix the problem and reset board." << std::endl;
         return 1;
 	}
 	else{
 		std::cout << "succesfull connected to board" << std::endl; 
-		return 0;
+		return 1;
 	}
 	// TODO: set current, move drive
 }

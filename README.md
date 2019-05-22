@@ -25,9 +25,10 @@ gcc -version
 ```
 You will need to download both the cross-compiler and the target root-file system. If all is setup correctly, you should be able to run. Make sure the toolchain is pointed to correct directory.
 ```console
-cmake . -DCMAKE_TOOLCHAIN_FILE=Toolchain-bb.cmake & make
+cmake -H. -Bbuild -DCMAKE_TOOLCHAIN_FILE=Toolchain-bb.cmake & make -C ./build
 ```
-Remove makecache if a cmake fails.
+Remove build if a cmake fails.
+
 
 
 ## Installation:

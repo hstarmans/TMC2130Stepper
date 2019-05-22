@@ -13,13 +13,13 @@ Beaglebone library for Trinamic TMC2130 Stepper driver.
 
 ### Beaglebone
 ```console
-cmake . & make
+cmake -H. -Bbuild & make -C ./build
 ```
 
 ### Cross compiler
 
 Cross compiler can be downloaded from [link](https://www.digikey.com/eewiki/display/linuxonarm/BeagleBone+Black#BeagleBoneBlack-Debian9).
-The cross-compiler should match the target system check; 
+The cross-compiler should match theexit target system check; 
 ```console
 gcc -version
 ```

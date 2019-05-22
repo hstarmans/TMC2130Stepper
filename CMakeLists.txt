@@ -1,11 +1,16 @@
+# Author Hexastorm 
+
+project (TMC2130Stepper)
+
 cmake_minimum_required(VERSION 3.3)
 
-project (test)
 # adds compiler flags
 add_definitions(-Wall -std=c++0x)
+
 #Bring the headers, deprecated
 include_directories(src
                     src/source)
+
 # sources should be added manually
 set(SOURCES ${PROJECT_SOURCE_DIR}/main.cpp
             ${PROJECT_SOURCE_DIR}/src/source/BusDevice.cpp
@@ -18,5 +23,12 @@ set(SOURCES ${PROJECT_SOURCE_DIR}/main.cpp
             ${PROJECT_SOURCE_DIR}/src/source/TMC2130Stepper_IHOLD_IRUN.cpp
             ${PROJECT_SOURCE_DIR}/src/source/TMC2130Stepper_PWMCONF.cpp
             ${PROJECT_SOURCE_DIR}/src/source/TMC2130Stepper.cpp)            
- 
+
+# CMake output is placed in different directory so it is easy to remove
+set(CMAKE_BUILD_FILES_DIRECTORY ${PROJECT_SOURCE_DIR}/build)
+
+# compilation output is placed in  binary folder
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
+
+
 add_executable(main ${SOURCES})

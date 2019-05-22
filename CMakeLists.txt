@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.3)
+
 project (test)
 # adds compiler flags
 add_definitions(-Wall -std=c++0x)

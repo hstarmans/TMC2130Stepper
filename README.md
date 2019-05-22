@@ -1,5 +1,7 @@
 # TMC2130Stepper
-Beaglebone library for Trinamic TMC2130 Stepper driver
+Beaglebone library for Trinamic TMC2130 Stepper driver.
+
+
 
 ## TODO:
 - [ ] Comments
@@ -8,6 +10,17 @@ Beaglebone library for Trinamic TMC2130 Stepper driver
 - [x] Easy setup for NEMA17 with default settings
 - [x] Convert functions returning 0/1 to boolean
 - [ ] Fritzing image of the wiring for an example setup
+
+## Cross-compile notes
+Install from [link](https://www.digikey.com/eewiki/display/linuxonarm/BeagleBone+Black#BeagleBoneBlack-Debian9).
+The cross-compiler should match the target system see gcc -version. If the wrong compiler is used this could give complicated bugs.
+You can find the compiler at ~/gcc-linaro-6.5.0-2018.12-x86_64_arm-linux-gnuebihf/bin. Don't forget to install the root-file system.
+On the bone you can run;
+cmake . & make
+On a different linux distro run;
+cmake . -DCMAKE_TOOLCHAIN_FILE=Toolchain-bb.cmake & make
+Remove makecache if a cmake fails.
+
 
 ## Installation:
 

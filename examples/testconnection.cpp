@@ -52,6 +52,6 @@ int main() {
 		std::this_thread::sleep_for(std::chrono::milliseconds(50));
 	}
 	// disable motor
-	clr_gpio(EN_PIN);
+	set_gpio(EN_PIN);
 	return 0;
 }

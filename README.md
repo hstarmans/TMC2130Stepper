@@ -42,9 +42,6 @@ git clone https://github.com/hstarmans/TMC2130Stepper.git
 ## What works:
 Nearly all the features in the registeries are configurable through get/set functions. See below for a list of functions. Datasheet ([link](https://www.trinamic.com/fileadmin/assets/Products/ICs_Documents/TMC2130_datasheet.pdf)) from Trinamic also provides further detail into the settings available.
 
-## Simple example
-For examples, see the example folder.
-
 ## Current calculations
 
 A simple way to set the current is to use the setCurrent() method.

@@ -39,55 +39,14 @@ Git clone this repository to the command line
 git clone https://github.com/hstarmans/TMC2130Stepper.git
 ```
 
+## Examples
+Made a couple of examples for the [Firestart v2 board](https://github.com/hstarmans/firestarter).
+This was mainly done to test the code. Better examples can be found at the original library
+of [teemuatlut](https://github.com/teemuatlut/TMC2130Stepper).
+
+
 ## What works:
 Nearly all the features in the registeries are configurable through get/set functions. See below for a list of functions. Datasheet ([link](https://www.trinamic.com/fileadmin/assets/Products/ICs_Documents/TMC2130_datasheet.pdf)) from Trinamic also provides further detail into the settings available.
-
-## Simple example
-```cpp
-/*
-Initializes the library and turns the motor in alternating directions.
-*/
-#define EN_PIN    38  // Nano v3:	16 Mega:	38	//enable (CFG6)
-#define DIR_PIN   55  //			19			55	//direction
-#define STEP_PIN  54  //			18			54	//step
-#define CS_PIN    40  //			17			64	//chip select
-
-bool dir = true;
-
-
-#include <TMC2130Stepper.h>
-TMC2130Stepper TMC2130 = TMC2130Stepper(EN_PIN, DIR_PIN, STEP_PIN, CS_PIN);
-
-void setup() {
-	Serial.begin(9600);
-	TMC2130.begin(); // Initiate pins and registeries
-	TMC2130.SilentStepStick2130(600); // Set stepper current to 600mA
-	TMC2130.stealthChop(1); // Enable extremely quiet stepping
-	
-	digitalWrite(EN_PIN, LOW);
-}
-
-void loop() {
-	digitalWrite(STEP_PIN, HIGH);
-	delayMicroseconds(10);
-	digitalWrite(STEP_PIN, LOW);
-	delayMicroseconds(10);
-	uint32_t ms = millis();
-	static uint32_t last_time = 0;
-	if ((ms - last_time) > 2000) {
-		if (dir) {
-			Serial.println("Dir -> 0");
-			TMC2130.shaft_dir(0);
-		} else {
-			Serial.println("Dir -> 1");
-			TMC2130.shaft_dir(1);
-		}
-		dir = !dir;
-		Serial.println(TMC2130.GCONF(), BIN);
-		last_time = ms;
-	}
-}
-```
 
 ## Current calculations
 

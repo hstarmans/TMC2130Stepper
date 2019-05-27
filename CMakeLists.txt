@@ -9,10 +9,10 @@ add_definitions(-Wall -std=c++0x)
 
 #Bring the headers, deprecated
 include_directories(src
-                    src/source)
+                   src/source)
 
 # sources should be added manually
-set(SOURCES ${PROJECT_SOURCE_DIR}/main.cpp
+set(LIB_SOURCES 
             ${PROJECT_SOURCE_DIR}/src/source/BusDevice.cpp
             ${PROJECT_SOURCE_DIR}/src/source/generic-gpio.cc
             ${PROJECT_SOURCE_DIR}/src/source/SPIDevice.cpp
@@ -24,11 +24,17 @@ set(SOURCES ${PROJECT_SOURCE_DIR}/main.cpp
             ${PROJECT_SOURCE_DIR}/src/source/TMC2130Stepper_PWMCONF.cpp
             ${PROJECT_SOURCE_DIR}/src/source/TMC2130Stepper.cpp)            
 
-# CMake output is placed in different directory so it is easy to remove
-set(CMAKE_BUILD_FILES_DIRECTORY ${PROJECT_SOURCE_DIR}/build)
-
 # compilation output is placed in  binary folder
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
 
+# library is written to build folder
+add_library( TMC2130Lib ${LIB_SOURCES})
 
-add_executable(main ${SOURCES})
+set(TARGETS ${PROJECT_SOURCE_DIR}/examples/testconnection.cpp)
+
+foreach( target ${TARGETS})
+    get_filename_component(targetname ${target} NAME)
+    string( REPLACE ".cpp" "" targetname ${targetname} )
+    add_executable( ${targetname} ${target}) 
+    target_link_libraries( ${targetname} TMC2130Lib )
+endforeach( target ${TARGETS})

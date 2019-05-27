@@ -34,12 +34,21 @@
             "cinttypes": "cpp",
             "type_traits": "cpp",
             "typeindex": "cpp",
-            "typeinfo": "cpp"
+            "typeinfo": "cpp",
+            "array": "cpp",
+            "iomanip": "cpp",
+            "sstream": "cpp",
+            "tuple": "cpp",
+            "utility": "cpp"
         }
     },
     "folders": [
         {
             "path": "."
+        },
+        {
+            "name": "SSH FS - beaglebone",
+            "uri": "ssh://beaglebone/"
         }
     ]
 }

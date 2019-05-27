@@ -5,16 +5,13 @@
         {
             "label": "make",
             "type": "shell",
-            "command": "make",
+            "command": "make -C ./build/",
             "presentation": {
                 "echo": true,
                 "reveal": "always",
                 "focus": false,
                 "panel": "shared"
             },
-            "args": [
-                "QUIET=0"
-            ],
             "problemMatcher": {
                 "owner": "cpp",
                 "fileLocation": [
@@ -28,12 +25,13 @@
                     "severity": 4,
                     "message": 5
                 }
-            },
+            }
         },
         {
             "label": "server copy",
             "type": "shell",
-            "command": "sshpass -p temppwd scp main debian@10.42.0.192:/home/debian/main",
+            "command": "sshpass -p temppwd scp ./bin/main debian@10.42.0.192:/home/debian/main",
+            "group": "build"
         },
         {
             "label": "build",
@@ -41,7 +39,10 @@
                 "kind": "build",
                 "isDefault": true
             },
-            "dependsOn": ["make", "server copy"]
+            "dependsOn": [
+                "make",
+                "server copy"
+            ]
         }
     ]
 }

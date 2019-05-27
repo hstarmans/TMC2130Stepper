@@ -5,11 +5,11 @@ SET(CMAKE_SYSTEM_NAME Linux)
 SET(CMAKE_SYSTEM_VERSION 1)
 
 # specify the cross compiler
-SET(CMAKE_C_COMPILER   /root/gcc-linaro-6.5.0-2018.12-x86_64_arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc-6.5.0)
-SET(CMAKE_CXX_COMPILER /root/gcc-linaro-6.5.0-2018.12-x86_64_arm-linux-gnueabihf/bin/arm-linux-gnueabihf-g++)
+SET(CMAKE_C_COMPILER   /opt/gcc-linaro-6.5.0-2018.12-x86_64_arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc-6.5.0)
+SET(CMAKE_CXX_COMPILER /opt/gcc-linaro-6.5.0-2018.12-x86_64_arm-linux-gnueabihf/bin/arm-linux-gnueabihf-g++)
 
 # Define the sysroot path for the RaspberryPi distribution in our tools folder 
-SET(CMAKE_FIND_ROOT_PATH /root/debian-9.8-minimal-armhf-2019-02-16/)
+SET(CMAKE_FIND_ROOT_PATH /opt/debian-9.8-minimal-armhf-2019-02-16/)
 
 
 # Use our definitions for compiler tools

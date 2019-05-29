@@ -1,9 +1,11 @@
-// fork off https://github.com/teemuatlut/TMC2130Stepper
+#include <chrono>
+#include <thread>
 
 #include "TMC2130Stepper.h"
 #include "TMC2130Stepper_MACROS.h"
 #include "generic-gpio.h" 
 #include <SPIDevice.h>
+
 
 TMC2130Stepper::TMC2130Stepper(uint32_t pinCS) : _pinCS(pinCS), _spi(exploringBB::SPIDevice(1,0)) {}
 
@@ -48,11 +50,21 @@ void TMC2130Stepper::begin() {
 	tbl(1); //blank_time(24);
 }
 
-void TMC2130Stepper::send2130(uint8_t addressByte, uint32_t *config) {
-	_spi.open(); //TODO: handle if device can't open
-	// here you set the chip select per driver
-	clr_gpio(_pinCS);
+void TMC2130Stepper::confirm_spicommand(int mseconds){
+	    //TODO: not tested if sleep is needed
+		std::this_thread::sleep_for(std::chrono::milliseconds(mseconds));
+		set_gpio(_pinCS);
+		std::this_thread::sleep_for(std::chrono::milliseconds(mseconds));
+		clr_gpio(_pinCS);
+		std::this_thread::sleep_for(std::chrono::milliseconds(mseconds));
+}
 
+void TMC2130Stepper::send2130(uint8_t addressByte, uint32_t *config) {
+	// after sending 40 bits or 5 bytes you will have to aknowledge by pulling up and down the select pin
+	// if more than 40 bits are sent they are shifted to SDO... which allows daisy chaining, see page 22 of 
+	// the TMC2130 datasheet
+	_spi.open(); 
+	clr_gpio(_pinCS);
 	status_response = _spi.write(addressByte & 0xFF); // s =
 
 	if (addressByte >> 7) { // Check if WRITE command
@@ -62,17 +74,14 @@ void TMC2130Stepper::send2130(uint8_t addressByte, uint32_t *config) {
 		_spi.write((*config >> 16) & 0xFF);
 		_spi.write((*config >>  8) & 0xFF);
 		_spi.write(*config & 0xFF);
+		confirm_spicommand();
 	} else { // READ command
 		unsigned char null_data[4] = {0x00, 0x00, 0x00, 0x00};
 		_spi.write(null_data, 4);
-		set_gpio(_pinCS);
-		clr_gpio(_pinCS);
-
+		confirm_spicommand();
 		_spi.write(addressByte & 0xFF); // Send the address byte again
 		// write 
 		unsigned char recv [1] = {0}; 
-
-		//TODO: this can be made shorter
 		_spi.transfer({0x00}, recv, 1);
 		*config = recv[0];
 		_spi.transfer({0x00}, recv, 1);
@@ -84,8 +93,8 @@ void TMC2130Stepper::send2130(uint8_t addressByte, uint32_t *config) {
 		_spi.transfer({0x00}, recv, 1);
 		*config <<= 8;
 		*config|= recv[0];
+		confirm_spicommand();
 	}
-
 	set_gpio(_pinCS);
 	_spi.close();
 }

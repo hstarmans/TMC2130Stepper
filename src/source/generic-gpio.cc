@@ -100,24 +100,25 @@ static void set_gpio_mask(uint32_t *mask, uint32_t gpio_def) {
 }
 
 // TODO: have at central place, right now it is tow places
-#define SLED_MOTOR_STEP (GPIO_1_BASE | 16)
-#define SLED_MOTOR_DIR (GPIO_1_BASE | 18)
-#define SLED_MOTOR_ENABLE (GPIO_1_BASE | 19)
+#define Z_MOTOR_STEP (GPIO_1_BASE | 14)
+#define Z_MOTOR_DIR (GPIO_0_BASE | 27)
+#define Z_MOTOR_ENABLE (GPIO_2_BASE | 1)
+#define Z_MOTOR_SELECT (GPIO_0_BASE | 26)
 
-#define SLED_ENDSWITCH_FRONT (GPIO_0_BASE | 31)
-#define SLED_ENDSWITCH_BACK (GPIO_1_BASE | 28)
+
 
 static void cfg_gpio_io() {
   uint32_t output_mask[4] = { 0, 0, 0, 0 };
 
   // All the gpio's we need from userspace (PRU will do its own)
-  set_gpio_mask(output_mask, SLED_MOTOR_ENABLE);
-  set_gpio_mask(output_mask, SLED_MOTOR_DIR);
-  set_gpio_mask(output_mask, SLED_MOTOR_STEP);
+  set_gpio_mask(output_mask, Z_MOTOR_STEP);
+  set_gpio_mask(output_mask, Z_MOTOR_DIR);
+  set_gpio_mask(output_mask, Z_MOTOR_ENABLE);
+  set_gpio_mask(output_mask, Z_MOTOR_SELECT);
 
   uint32_t input_mask[4] = { 0, 0, 0, 0 };
-  set_gpio_mask(input_mask, SLED_ENDSWITCH_FRONT);
-  set_gpio_mask(input_mask, SLED_ENDSWITCH_BACK);
+  //set_gpio_mask(input_mask, SLED_ENDSWITCH_FRONT);
+  //set_gpio_mask(input_mask, SLED_ENDSWITCH_BACK);
 
   // Preserve GPIO output settings that might already be set by other tasks,
   // so we only selectively set the bits we are interested in.

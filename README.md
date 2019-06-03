@@ -43,7 +43,8 @@ git clone https://github.com/hstarmans/TMC2130Stepper.git
 Made a couple of examples for the [Firestart v2 board](https://github.com/hstarmans/firestarter).
 This was mainly done to test the code. Better examples can be found at the original library
 of [teemuatlut](https://github.com/teemuatlut/TMC2130Stepper).
-
+You need to run the command map_gpio with the correct pins. This is ugly but needed at the moment.
+Elevated privileges, i.e. sudo, can be required.
 
 ## What works:
 Nearly all the features in the registeries are configurable through get/set functions. See below for a list of functions. Datasheet ([link](https://www.trinamic.com/fileadmin/assets/Products/ICs_Documents/TMC2130_datasheet.pdf)) from Trinamic also provides further detail into the settings available.

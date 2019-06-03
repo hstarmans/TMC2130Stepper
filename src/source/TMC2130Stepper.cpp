@@ -6,6 +6,9 @@
 #include "generic-gpio.h" 
 #include <SPIDevice.h>
 
+/* TODO REMOVE */
+#include<iostream>
+using namespace std;
 
 TMC2130Stepper::TMC2130Stepper(uint32_t pinCS) : _pinCS(pinCS), _spi(exploringBB::SPIDevice(1,0)) {}
 
@@ -67,7 +70,8 @@ void TMC2130Stepper::send2130(uint8_t addressByte, uint32_t *config) {
 	clr_gpio(_pinCS);
 	status_response = _spi.write(addressByte & 0xFF); // s =
 
-	if (addressByte >> 7) { // Check if WRITE command
+	if (addressByte >> 7) { 
+		// Check if WRITE command
 		//*config &= ~mask; // Clear bits being set
 		//*config |= (value & mask); // Set new values
 		_spi.write((*config >> 24) & 0xFF);

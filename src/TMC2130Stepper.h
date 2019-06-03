@@ -434,6 +434,6 @@ class TMC2130Stepper {
 							MSLUTSTART_sr = 0x00F70000UL;
 
 		void send2130(uint8_t addressByte, uint32_t *config);
-
+		void confirm_spicommand(int mseconds=50);
 		uint16_t val_mA           = 0;
 };

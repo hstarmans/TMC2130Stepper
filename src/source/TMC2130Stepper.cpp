@@ -12,13 +12,18 @@ using namespace std;
 
 TMC2130Stepper::TMC2130Stepper(uint32_t pinCS) : _pinCS(pinCS), _spi(exploringBB::SPIDevice(1,0)) {}
 
-TMC2130Stepper::TMC2130Stepper(uint32_t pinEN, uint32_t pinDIR, uint32_t pinStep, uint32_t pinCS) :
+TMC2130Stepper::TMC2130Stepper(uint32_t pinEN, uint32_t pinDIR, uint32_t pinSTEP, uint32_t pinCS) :
 	_pinEN(pinEN),
-	_pinSTEP(pinStep),
+	_pinSTEP(pinSTEP),
 	_pinCS(pinCS),
 	_pinDIR(pinDIR),
 	_spi(exploringBB::SPIDevice(1,0))
 	{}
+
+TMC2130Stepper::~TMC2130Stepper()
+{
+	unmap_gpio();
+}
 
 void TMC2130Stepper::begin() {
 #ifdef TMC2130DEBUG
@@ -32,7 +37,17 @@ void TMC2130Stepper::begin() {
 	printf("Chip select pin: \n");
 	printf("%lu\n", (unsigned long)_pinCS);
 #endif
-
+	std::vector<uint32_t> input = {_pinEN, _pinDIR, _pinSTEP, _pinCS};
+	// remove uninitialized pins
+	for(unsigned i=0; i<input.size(); ++i)
+	{
+		if(input[i] == 0xFFFFFFFF)
+		{
+			input.erase(input.begin()+i);
+			--i;
+		}
+	}
+	map_gpio(&input);
 	//set pins
 	if (_pinEN != 0xFFFFFFFF) {
 		set_gpio(_pinEN); //deactivate driver (LOW active)

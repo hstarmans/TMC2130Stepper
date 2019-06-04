@@ -9,6 +9,7 @@ class TMC2130Stepper {
 	public:
 		TMC2130Stepper(uint32_t pinCS);
 		TMC2130Stepper(uint32_t pinEN, uint32_t pinDIR, uint32_t pinStep, uint32_t pinCS);
+		~TMC2130Stepper();
 		void begin();
 		void checkStatus();
 		void rms_current(uint16_t mA, float multiplier=0.5, float RS=0.11);

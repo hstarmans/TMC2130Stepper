@@ -7,10 +7,10 @@
 #include<iostream>
 #include <chrono>
 #include <thread>
+#include <vector>
 
 #include <TMC2130Stepper.h>
 #include <generic-gpio.h>
-
 
 #define Z_MOTOR_STEP (GPIO_1_BASE | 14)
 #define Z_MOTOR_DIR (GPIO_0_BASE | 27)
@@ -19,11 +19,10 @@
 
 TMC2130Stepper driver = TMC2130Stepper(Z_MOTOR_ENABLE, Z_MOTOR_DIR, Z_MOTOR_STEP, Z_MOTOR_SELECT);
 
-
 using namespace std;
 
 int main() {
-	map_gpio();
+	//NOTE: driver begin maps the pins
 	driver.begin();
 	uint8_t result = driver.test_connection();
 	if (result) {

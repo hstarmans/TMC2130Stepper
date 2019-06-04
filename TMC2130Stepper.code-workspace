@@ -45,10 +45,6 @@
     "folders": [
         {
             "path": "."
-        },
-        {
-            "name": "SSH FS - beaglebone",
-            "uri": "ssh://beaglebone/"
         }
     ]
 }

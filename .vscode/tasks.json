@@ -30,7 +30,7 @@
         {
             "label": "server copy",
             "type": "shell",
-            "command": "sshpass -p temppwd scp ./bin/main debian@10.42.0.192:/home/debian/main",
+            "command": "sshpass -p temppwd scp ./bin/testconnection debian@10.42.0.192:/home/debian/testconnection",
             "group": "build"
         },
         {

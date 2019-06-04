@@ -40,10 +40,10 @@ git clone https://github.com/hstarmans/TMC2130Stepper.git
 ```
 
 ## Examples
-Made a couple of examples for the [Firestart v2 board](https://github.com/hstarmans/firestarter).
+Made a couple of examples for the [Firestarter v2 board](https://github.com/hstarmans/firestarter).
 This was mainly done to test the code. Better examples can be found at the original library
 of [teemuatlut](https://github.com/teemuatlut/TMC2130Stepper).
-You need to run the command map_gpio with the correct pins. This is ugly but needed at the moment.
+The command map_gpio is run internally to map the pins. So pass all the pins even if they are not used in the object. 
 Elevated privileges, i.e. sudo, can be required.
 
 ## What works:

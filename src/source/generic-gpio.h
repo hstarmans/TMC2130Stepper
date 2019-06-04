@@ -20,6 +20,7 @@
 #define LDGRAPHY_GENERIC_GPIO_H
 
 #include <stdint.h>
+#include <vector>
 
 // Memory space mapped to the GPIO registers
 #define GPIO_0_BASE       0x44e07000
@@ -32,7 +33,7 @@ int get_gpio(uint32_t gpio_def);
 void set_gpio(uint32_t gpio_def);
 void clr_gpio(uint32_t gpio_def);
 
-bool map_gpio();
+bool map_gpio(std::vector<uint32_t> input[]={}, std::vector<uint32_t> output[]={});
 void unmap_gpio();
 
 #endif  // LDGRAPHY_GENERIC_GPIO_H

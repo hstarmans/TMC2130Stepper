@@ -22,6 +22,7 @@
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <unistd.h>
+#include <vector>
 
 #include "generic-gpio.h"
 
@@ -99,30 +100,21 @@ static void set_gpio_mask(uint32_t *mask, uint32_t gpio_def) {
   }
 }
 
-// TODO: have at central place, right now it is tow places
-#define Z_MOTOR_STEP (GPIO_1_BASE | 14)
-#define Z_MOTOR_DIR (GPIO_0_BASE | 27)
-#define Z_MOTOR_ENABLE (GPIO_2_BASE | 1)
-#define Z_MOTOR_SELECT (GPIO_0_BASE | 26)
-
-
-
-static void cfg_gpio_io() {
+static void cfg_gpio_io(std::vector<uint32_t> input[]={}, std::vector<uint32_t> output[]={}) {
   uint32_t output_mask[4] = { 0, 0, 0, 0 };
-
+  std::vector<uint32_t>::iterator item;
+  for(item = input->begin(); item!=input->end(); ++item) 
+  {
+    set_gpio_mask(output_mask, *item);
+  }
   // All the gpio's we need from userspace (PRU will do its own)
-  set_gpio_mask(output_mask, Z_MOTOR_STEP);
-  set_gpio_mask(output_mask, Z_MOTOR_DIR);
-  set_gpio_mask(output_mask, Z_MOTOR_ENABLE);
-  set_gpio_mask(output_mask, Z_MOTOR_SELECT);
-
   uint32_t input_mask[4] = { 0, 0, 0, 0 };
-  //set_gpio_mask(input_mask, SLED_ENDSWITCH_FRONT);
-  //set_gpio_mask(input_mask, SLED_ENDSWITCH_BACK);
-
+  for(item = output->begin(); item!=output->end(); ++item) 
+  {
+    set_gpio_mask(output_mask, *item);
+  }
   // Preserve GPIO output settings that might already be set by other tasks,
   // so we only selectively set the bits we are interested in.
-
   // Set the output enable register for each GPIO bank.
   // Output direction is signified with a zero.
   gpio_0[GPIO_OE/4] &= ~output_mask[0];
@@ -169,7 +161,7 @@ static int enable_gpio_clocks(int fd) {
   return 1;
 }
 
-bool map_gpio() {
+bool map_gpio(std::vector<uint32_t> input[], std::vector<uint32_t> output[]) {
   bool ret = false;
   int fd;
 
@@ -187,7 +179,8 @@ bool map_gpio() {
   gpio_3 = map_port(fd, GPIO_MMAP_SIZE, GPIO_3_BASE);
   if (gpio_3 == MAP_FAILED) { perror("mmap() GPIO-3"); goto exit; }
 
-  cfg_gpio_io();  // All the pins we use.
+  // All the pins we use need to be configured
+  cfg_gpio_io(input, output);  
 
   ret = true;
 

@@ -33,7 +33,7 @@ int get_gpio(uint32_t gpio_def);
 void set_gpio(uint32_t gpio_def);
 void clr_gpio(uint32_t gpio_def);
 
-bool map_gpio(std::vector<uint32_t> input[]={}, std::vector<uint32_t> output[]={});
+bool map_gpio(std::vector<uint32_t> input[]=nullptr, std::vector<uint32_t> output[]=nullptr);
 void unmap_gpio();
 
 #endif  // LDGRAPHY_GENERIC_GPIO_H

@@ -100,18 +100,24 @@ static void set_gpio_mask(uint32_t *mask, uint32_t gpio_def) {
   }
 }
 
-static void cfg_gpio_io(std::vector<uint32_t> input[]={}, std::vector<uint32_t> output[]={}) {
+static void cfg_gpio_io(std::vector<uint32_t> *input, std::vector<uint32_t> *output) {
   uint32_t output_mask[4] = { 0, 0, 0, 0 };
   std::vector<uint32_t>::iterator item;
-  for(item = input->begin(); item!=input->end(); ++item) 
+  if(input!=nullptr)
   {
-    set_gpio_mask(output_mask, *item);
+    for(item = input->begin(); item!=input->end(); ++item) 
+    {
+      set_gpio_mask(output_mask, *item);
+    }
   }
   // All the gpio's we need from userspace (PRU will do its own)
   uint32_t input_mask[4] = { 0, 0, 0, 0 };
-  for(item = output->begin(); item!=output->end(); ++item) 
+  if(output!=nullptr)
   {
-    set_gpio_mask(output_mask, *item);
+    for(item = output->begin(); item!=output->end(); ++item) 
+    {
+      set_gpio_mask(output_mask, *item);
+    }
   }
   // Preserve GPIO output settings that might already be set by other tasks,
   // so we only selectively set the bits we are interested in.
@@ -178,10 +184,8 @@ bool map_gpio(std::vector<uint32_t> input[], std::vector<uint32_t> output[]) {
   if (gpio_2 == MAP_FAILED) { perror("mmap() GPIO-2"); goto exit; }
   gpio_3 = map_port(fd, GPIO_MMAP_SIZE, GPIO_3_BASE);
   if (gpio_3 == MAP_FAILED) { perror("mmap() GPIO-3"); goto exit; }
-
   // All the pins we use need to be configured
   cfg_gpio_io(input, output);  
-
   ret = true;
 
 exit:

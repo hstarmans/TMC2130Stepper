@@ -40,8 +40,8 @@
                 "isDefault": true
             },
             "dependsOn": [
-                "make",
-                "server copy"
+                "server copy",
+                "make"
             ]
         }
     ]

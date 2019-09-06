@@ -12,12 +12,12 @@
 #include <TMC2130Stepper.h>
 #include <generic-gpio.h>
 
-#define Z_MOTOR_STEP (GPIO_1_BASE | 14)
-#define Z_MOTOR_DIR (GPIO_0_BASE | 27)
-#define Z_MOTOR_ENABLE (GPIO_2_BASE | 1)
-#define Z_MOTOR_SELECT (GPIO_0_BASE | 26) // CSZ 8.14 0|26, CSX 0|5, CSY 0|13
+#define Z_MOTOR_STEP (GPIO_1_BASE | 14)   // Z_STEP 1|14 X_STEP PRU Y_STEP 1|12 
+#define Z_MOTOR_DIR (GPIO_0_BASE | 27)    // Z_DIR  0|27  X_DIR PRU Y_DIR  1|15
+#define STEPPER_ENABLE (GPIO_1_BASE | 28)
+#define Z_MOTOR_SELECT (GPIO_0_BASE | 26) // CSZ 0|26, CSX 0|5, CSY 0|13
 
-TMC2130Stepper driver = TMC2130Stepper(Z_MOTOR_ENABLE, Z_MOTOR_DIR, Z_MOTOR_STEP, Z_MOTOR_SELECT);
+TMC2130Stepper driver = TMC2130Stepper(STEPPER_ENABLE, Z_MOTOR_DIR, Z_MOTOR_STEP, Z_MOTOR_SELECT);
 
 using namespace std;
 
@@ -42,7 +42,7 @@ int main() {
 	driver.toff(3);
 	driver.stealthChop(1);
 	// enable motor
-	clr_gpio(Z_MOTOR_ENABLE);
+	clr_gpio(STEPPER_ENABLE);
 	// set direction
 	clr_gpio(Z_MOTOR_DIR);
 	// infinitely move up an down with moves of 2 seconds
@@ -67,6 +67,6 @@ int main() {
 	}
     // TODO: program never reaches this part of code
 	// disable motor
-	set_gpio(Z_MOTOR_ENABLE);
+	set_gpio(STEPPER_ENABLE);
 	return 0;
 }

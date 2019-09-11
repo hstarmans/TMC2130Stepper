@@ -57,6 +57,7 @@ SPIDevice::SPIDevice(unsigned int bus, unsigned int device):
 	this->bits = 8;
 	this->speed = 500000;
 	this->delay = 0;
+	this->cs_change = 0;
 	this->open();
 }
 
@@ -93,10 +94,10 @@ int SPIDevice::transfer(unsigned char send[], unsigned char receive[], int lengt
 	transfer.speed_hz = this->speed;
 	transfer.bits_per_word = this->bits;
 	transfer.delay_usecs = this->delay;
-        transfer.tx_nbits = 0;        // no. bits for writing (default 0)
-        transfer.rx_nbits = 0;        // no. bits for reading (default 0)
-        transfer.cs_change = 0;       // affects chip select after transfe
-        transfer.pad = 0;             // interbyte delay
+        transfer.tx_nbits = 0;                  // no. bits for writing (default 0)
+        transfer.rx_nbits = 0;                  // no. bits for reading (default 0)
+        transfer.cs_change = this->cs_change;   // affects chip select after transfer    
+        transfer.pad = 0;                       // interbyte delay
 	int status = ioctl(this->file, SPI_IOC_MESSAGE(1), &transfer);
 	if (status < 0) {
 		perror("SPI: SPI_IOC_MESSAGE Failed");
@@ -194,6 +195,24 @@ void SPIDevice::debugDumpRegisters(unsigned int number){
 }
 
 /**
+ *   Set the chip select of the bus
+ *   @param cs_change can be on(true) or off (false)
+ */
+int SPIDevice::setChipSelect(bool cs_change){
+	this->cs_change = cs_change;
+	if (ioctl(this->file, SPI_IOC_WR_MAX_SPEED_HZ, &this->speed)==-1){
+		perror("SPI: Can't set chip select.");
+		return -1;
+	}
+	if (ioctl(this->file, SPI_IOC_RD_MAX_SPEED_HZ, &this->speed)==-1){
+		perror("SPI: Can't get chip select.");
+		return -1;
+	}
+	return 0;
+}
+
+
+/**
  *   Set the speed of the SPI bus
  *   @param speed the speed in Hz
  */
@@ -209,6 +228,7 @@ int SPIDevice::setSpeed(uint32_t speed){
 	}
 	return 0;
 }
+
 
 /**
  *   Set the mode of the SPI bus

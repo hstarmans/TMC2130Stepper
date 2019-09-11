@@ -59,6 +59,7 @@ public:
 	virtual int write(unsigned char value);
 	virtual int write(unsigned char value[], int length);
 	virtual int setSpeed(uint32_t speed);
+	virtual int setChipSelect(bool cs_change);
 	virtual int setMode(SPIDevice::SPIMODE mode);
 	virtual int setBitsPerWord(uint8_t bits);
 	virtual void close();
@@ -66,6 +67,7 @@ public:
 	virtual int transfer(unsigned char read[], unsigned char write[], int length);
 private:
 	SPIMODE mode;     //!< The SPI mode as per the SPIMODE enumeration
+	bool cs_change;   //!< Affect chip select after transfer   
 	uint8_t bits;     //!< The number of bits per word
 	uint32_t speed;   //!< The speed of transfer in Hz
 	uint16_t delay;   //!< The transfer delay in usecs

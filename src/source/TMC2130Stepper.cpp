@@ -55,7 +55,12 @@ void TMC2130Stepper::begin() {
 	if (_pinSTEP != 0xFFFFFFFF) {
 		clr_gpio(_pinSTEP);
 	}
-	set_gpio(_pinCS);
+	if (_pinCS != 0XFFFFFFFF) {
+		set_gpio(_pinCS);
+	}
+	else{
+		_spi.setChipSelect(true);
+	}
 
 	// set SPI settings
 	_spi.setSpeed(16000000/8); 
@@ -71,9 +76,13 @@ void TMC2130Stepper::begin() {
 void TMC2130Stepper::confirm_spicommand(int mseconds){
 	    //TODO: not tested if sleep is needed
 		std::this_thread::sleep_for(std::chrono::milliseconds(mseconds));
-		set_gpio(_pinCS);
+		if (_pinCS != 0XFFFFFFFF){
+			set_gpio(_pinCS);
+		}
 		std::this_thread::sleep_for(std::chrono::milliseconds(mseconds));
-		clr_gpio(_pinCS);
+		if (_pinCS != 0XFFFFFFFF){
+			clr_gpio(_pinCS);
+		}
 		std::this_thread::sleep_for(std::chrono::milliseconds(mseconds));
 }
 
@@ -82,7 +91,9 @@ void TMC2130Stepper::send2130(uint8_t addressByte, uint32_t *config) {
 	// if more than 40 bits are sent they are shifted to SDO... which allows daisy chaining, see page 22 of 
 	// the TMC2130 datasheet
 	_spi.open(); 
-	clr_gpio(_pinCS);
+	if (_pinCS != 0XFFFFFFFF){
+		clr_gpio(_pinCS);
+	}
 	status_response = _spi.write(addressByte & 0xFF); // s =
 
 	if (addressByte >> 7) { 
@@ -114,7 +125,9 @@ void TMC2130Stepper::send2130(uint8_t addressByte, uint32_t *config) {
 		*config|= recv[0];
 		confirm_spicommand();
 	}
-	set_gpio(_pinCS);
+	if (_pinCS != 0XFFFFFFFF){
+		set_gpio(_pinCS);
+	}
 	_spi.close();
 }
 

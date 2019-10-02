@@ -38,7 +38,7 @@ int main() {
 		std::cout << "Succesfull connected to board." << std::endl; 
 	}
 	driver.rms_current(600);
-	driver.microsteps(1);
+	driver.microsteps(256);
 	driver.toff(3);
 	driver.stealthChop(1);
 	// enable motor
@@ -47,7 +47,7 @@ int main() {
 	clr_gpio(Z_MOTOR_DIR);
 	// infinitely move up an down with moves of 2 seconds
 	bool dir = true;
-        for( int i = 0; i<11; i=i+1)
+        for( int i = 0; i<3; i=i+1)
 	{
 		if(dir){
 			std::cout << "Direction up" << std::endl;

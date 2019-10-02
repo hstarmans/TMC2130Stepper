@@ -32,7 +32,8 @@ add_library( TMC2130Lib ${LIB_SOURCES})
 
 set(TARGETS ${PROJECT_SOURCE_DIR}/examples/testzconnection.cpp
 	    ${PROJECT_SOURCE_DIR}/examples/testyconnection.cpp
-	    ${PROJECT_SOURCE_DIR}/examples/testxconnection.cpp)
+	    ${PROJECT_SOURCE_DIR}/examples/testxconnection.cpp
+	    ${PROJECT_SOURCE_DIR}/examples/homex.cpp)
 
 foreach( target ${TARGETS})
     get_filename_component(targetname ${target} NAME)

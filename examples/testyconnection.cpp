@@ -38,7 +38,7 @@ int main() {
 		std::cout << "Succesfull connected to board." << std::endl; 
 	}
 	driver.rms_current(600);
-	driver.microsteps(1);
+	driver.microsteps(16);
 	driver.toff(3);
 	driver.stealthChop(1);
 	// enable motor

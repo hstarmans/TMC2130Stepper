@@ -2,12 +2,20 @@
 Beaglebone library for Trinamic TMC2130 Stepper driver in C++ and Python.
 
 ## TODO:
-- [ ] Comments
-- [x] Documentation
-- [x] Examples
-- [x] Easy setup for NEMA17 with default settings
-- [x] Convert functions returning 0/1 to boolean
-- [ ] Fritzing image of the wiring for an example setup
+* The SPIO x-pin can be used via 0xFFFFFFFF but a 2 is returned.
+
+## Installation:
+
+Login to beaglebone with for example SSH.
+Git clone this repository to the command line
+```console
+git clone --recurse-submodules https://github.com/hstarmans/TMC2130Stepper.git
+```
+Library can be installed via python.
+```console
+sudo pip3 install ./TMC2130Stepper
+```
+SPI requires elevated privileges or you should add yourself to the dialout group.
 
 ## Compile notes
 
@@ -28,16 +36,6 @@ You will need to download both the cross-compiler and the target root-file syste
 cmake -H. -Bbuild -DCMAKE_TOOLCHAIN_FILE=Toolchain-bb.cmake & make -C ./build
 ```
 Remove build if a cmake fails.
-
-
-## Installation:
-
-Login to beaglebone with for example SSH.
-Git clone this repository to the command line
-```console
-git clone https://github.com/hstarmans/TMC2130Stepper.git
-```
-The compilie notes above are for the C++ examples. The library is at the moment installed via python.
 
 ## Examples
 Made a couple of examples for the [Firestarter v2 board](https://github.com/hstarmans/firestarter).

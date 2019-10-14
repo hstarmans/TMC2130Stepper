@@ -1,5 +1,5 @@
 # TMC2130Stepper
-Beaglebone library for Trinamic TMC2130 Stepper driver.
+Beaglebone library for Trinamic TMC2130 Stepper driver in C++ and Python.
 
 ## TODO:
 - [ ] Comments
@@ -30,7 +30,6 @@ cmake -H. -Bbuild -DCMAKE_TOOLCHAIN_FILE=Toolchain-bb.cmake & make -C ./build
 Remove build if a cmake fails.
 
 
-
 ## Installation:
 
 Login to beaglebone with for example SSH.
@@ -38,6 +37,7 @@ Git clone this repository to the command line
 ```console
 git clone https://github.com/hstarmans/TMC2130Stepper.git
 ```
+The compilie notes above are for the C++ examples. The library is at the moment installed via python.
 
 ## Examples
 Made a couple of examples for the [Firestarter v2 board](https://github.com/hstarmans/firestarter).

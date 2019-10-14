@@ -12,3 +12,9 @@ _deps
 build/
 bin/
 .vscode/*
+dist/
+_build/
+_generate/
+*.so
+*.py[cod]
+*.egg-info

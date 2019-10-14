@@ -8,7 +8,7 @@ PYBIND11_MODULE(steppers, m) {
         .def(py::init<uint32_t>())
         .def(py::init<uint32_t, uint32_t, uint32_t, uint32_t>())
         .def("begin", &TMC2130Stepper::begin)
-        .def("toff", py::overload_cast<>(&TMC2130Stepper::toff), "Set the toff time")
+        .def("toff", py::overload_cast<uint8_t>(&TMC2130Stepper::toff), "Set the toff time")
         .def("stealthChop", py::overload_cast<bool>(&TMC2130Stepper::stealthChop), "Enable stealtchop with boolean")
         .def("test_connection", &TMC2130Stepper::test_connection)
         .def("microsteps", py::overload_cast<uint16_t>(&TMC2130Stepper::microsteps))

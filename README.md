@@ -5,11 +5,14 @@ Beaglebone library for Trinamic TMC2130 Stepper driver in C++ and Python.
 * The SPIO x-pin can be used via 0xFFFFFFFF but a 2 is returned.
 
 ## Installation:
-
 Login to beaglebone with for example SSH.
 Git clone this repository to the command line
 ```console
 git clone --recurse-submodules https://github.com/hstarmans/TMC2130Stepper.git
+```
+Install cmake
+```console
+sudo apt -y install cmake
 ```
 Library can be installed via python.
 ```console

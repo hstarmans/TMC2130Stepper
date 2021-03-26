@@ -1,6 +1,6 @@
 # TMC2130Stepper
-Beaglebone library for Trinamic TMC2130 Stepper driver in C++ and Python.
-Library is depeprecated and has been replaced with [TMCStepper](https://github.com/hstarmans/TMCStepper). This library might as well work
+Beaglebone library for Trinamic TMC2130 Stepper driver in C++ and Python.  
+**Library is depeprecated** and has been replaced with [TMCStepper](https://github.com/hstarmans/TMCStepper). This library might as well work
 on beaglebone.
 
 ## TODO:
